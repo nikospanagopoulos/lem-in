@@ -34,10 +34,11 @@ const unlimited = math.MaxInt32 / 2
 // and gains capacity as flow is pushed along the forward arc — this is what
 // lets a later search cancel part of an earlier one.
 type arc struct {
-	to   int // destination node
-	cap  int // remaining capacity on THIS arc, right now
-	cost int // cost of sending one unit of flow along this arc
-	rev  int // index of the reverse arc, inside arcs[to]
+	to      int // destination node
+	cap     int // remaining capacity on THIS arc, right now
+	origCap int // η αρχική χωρητικότητα, για να υπολογίζουμε τη ροή αργότερα
+	cost    int // cost of sending one unit of flow along this arc
+	rev     int // index of the reverse arc, inside arcs[to]
 }
 
 // network is the split-room graph of one colony, built once by newNetwork
@@ -106,16 +107,18 @@ func newNetwork(g *graph.Graph, start, end string) *network {
 // does, and then it can carry back exactly as much as was sent forward.
 func (net *network) addArc(from, to, capacity, cost int) {
 	net.arcs[from] = append(net.arcs[from], arc{
-		to:   to,
-		cap:  capacity,
-		cost: cost,
-		rev:  len(net.arcs[to]), // where the reverse arc will land, below
+		to:      to,
+		cap:     capacity,
+		origCap: capacity,
+		cost:    cost,
+		rev:     len(net.arcs[to]), // where the reverse arc will land, below
 	})
 	net.arcs[to] = append(net.arcs[to], arc{
-		to:   from,
-		cap:  0,
-		cost: -cost,
-		rev:  len(net.arcs[from]) - 1, // where the forward arc just landed, above
+		to:      from,
+		cap:     0,
+		origCap: 0,
+		cost:    -cost,
+		rev:     len(net.arcs[from]) - 1, // where the forward arc just landed, above
 	})
 }
 
@@ -214,4 +217,56 @@ func (net *network) roomPath(path []step) []string {
 		}
 	}
 	return rooms
+}
+
+// flowRemaining counts, for every "real" arc (one with origCap > 0 — a
+// reverse arc always has origCap 0 and is skipped), how many units of flow
+// currently pass through it. That is origCap - cap: capacity only ever
+// moves from a forward arc to its reverse, so this difference is exactly
+// what was sent and not since cancelled.
+func (net *network) flowRemaining() [][]int {
+	remaining := make([][]int, len(net.arcs))
+	for node, arcs := range net.arcs {
+		remaining[node] = make([]int, len(arcs))
+		for idx, a := range arcs {
+			if a.origCap > 0 {
+				remaining[node][idx] = a.origCap - a.cap
+			}
+		}
+	}
+	return remaining
+}
+
+// decomposeOnePath walks one path from start to end, following any arc
+// that still has unconsumed flow, and consumes it as it goes. Because every
+// room (other than start/end) allows at most one unit of flow through its
+// in->out arc, this walk can never revisit a room: it is always a simple
+// path.
+func (net *network) decomposeOnePath(remaining [][]int) []step {
+	path := []step{{node: net.start, arc: noNode}}
+	node := net.start
+	for node != net.end {
+		for idx := range net.arcs[node] {
+			if remaining[node][idx] > 0 {
+				remaining[node][idx]--
+				node = net.arcs[node][idx].to
+				path = append(path, step{node: node, arc: idx})
+				break
+			}
+		}
+	}
+	return path
+}
+
+// decomposePaths reads k room-disjoint paths out of the network's current
+// flow (PRD 6.3, step 4). This is run once, after k rounds of
+// shortestPath+augment have pushed k units of flow in total.
+func (net *network) decomposePaths(k int) []Path {
+	remaining := net.flowRemaining()
+	paths := make([]Path, 0, k)
+	for i := 0; i < k; i++ {
+		steps := net.decomposeOnePath(remaining)
+		paths = append(paths, Path(net.roomPath(steps)))
+	}
+	return paths
 }
