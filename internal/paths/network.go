@@ -36,7 +36,7 @@ const unlimited = math.MaxInt32 / 2
 type arc struct {
 	to      int // destination node
 	cap     int // remaining capacity on THIS arc, right now
-	origCap int // η αρχική χωρητικότητα, για να υπολογίζουμε τη ροή αργότερα
+	origCap int
 	cost    int // cost of sending one unit of flow along this arc
 	rev     int // index of the reverse arc, inside arcs[to]
 }
@@ -61,7 +61,7 @@ func nodeOut(room int) int { return 2*room + 1 }
 // names that exist in g; the caller (paths.Sets) gets them from a
 // graph.Colony the parser has already validated, so this function does not
 // re-check them.
-func newNetwork(g *graph.Graph, start, end string) *network {
+func newNetwork(g *graph.Graph, start, end string) (*network, error) {
 	roomNames := g.Rooms()
 
 	roomIndex := make(map[string]int, len(roomNames))
@@ -69,9 +69,14 @@ func newNetwork(g *graph.Graph, start, end string) *network {
 		roomIndex[name] = i
 	}
 
-	startID := roomIndex[start]
-	endID := roomIndex[end]
-
+	startID, ok := roomIndex[start]
+	if !ok {
+		return nil, ErrNoPath
+	}
+	endID, ok := roomIndex[end]
+	if !ok {
+		return nil, ErrNoPath
+	}
 	net := &network{
 		arcs:      make([][]arc, 2*len(roomNames)),
 		roomIndex: roomIndex,
@@ -99,7 +104,7 @@ func newNetwork(g *graph.Graph, start, end string) *network {
 		}
 	}
 
-	return net
+	return net, nil
 }
 
 // addArc adds a forward arc from->to and its paired reverse arc to->from.
