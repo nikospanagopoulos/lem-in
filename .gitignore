@@ -1,0 +1,12 @@
+# Built programs (root solver and visualizer), only at the repo root
+/lem-in
+/visualizer
+
+# Test and coverage output
+*.test
+*.out
+
+# Editors and operating systems
+.vscode/
+.idea/
+.DS_Store
