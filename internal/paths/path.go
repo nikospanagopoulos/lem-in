@@ -29,7 +29,10 @@ func (p Path) length() int { return len(p) - 1 }
 // largest k for which such a set exists. Paths inside each set are sorted
 // by length, shortest first.
 func Sets(g *graph.Graph, start, end string) ([][]Path, error) {
-	net := newNetwork(g, start, end)
+	net, err := newNetwork(g, start, end)
+	if err != nil {
+		return nil, err
+	}
 
 	var sets [][]Path
 	for k := 1; ; k++ {
@@ -40,7 +43,7 @@ func Sets(g *graph.Graph, start, end string) ([][]Path, error) {
 		net.augment(route)
 
 		paths := net.decomposePaths(k)
-		sort.Slice(paths, func(i, j int) bool {
+		sort.SliceStable(paths, func(i, j int) bool {
 			return paths[i].length() < paths[j].length()
 		})
 		sets = append(sets, paths)
@@ -111,6 +114,9 @@ func deliverable(lengths []int, t int) int {
 // Best returns the set from sets that needs the fewest turns for ants
 // ants. On a tie, the smaller set wins (PRD section 8.3).
 func Best(sets [][]Path, ants int) []Path {
+	if len(sets) == 0 {
+		return nil
+	}
 	best := sets[0]
 	bestTurns := Turns(best, ants)
 
