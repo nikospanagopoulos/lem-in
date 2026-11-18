@@ -1,0 +1,6 @@
+1
+##start
+s 0 zero
+##end
+e 1 0
+s-e

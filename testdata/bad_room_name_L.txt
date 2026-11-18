@@ -1,0 +1,6 @@
+1
+##start
+Ls 0 0
+##end
+e 1 0
+Ls-e

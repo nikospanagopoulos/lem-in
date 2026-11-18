@@ -1,0 +1,8 @@
+2
+##start
+kitchen 0 0
+hall 1 0
+##end
+garden 2 0
+kitchen-hall
+hall-garden

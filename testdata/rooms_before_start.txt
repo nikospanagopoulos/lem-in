@@ -1,0 +1,10 @@
+2
+a 1 0
+b 2 0
+##start
+s 0 0
+##end
+e 3 0
+s-a
+a-b
+b-e
