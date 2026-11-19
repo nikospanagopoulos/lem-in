@@ -1,0 +1,95 @@
+:root {
+  --bg: #f6f5f1;
+  --card: #ffffff;
+  --text: #1f1e1b;
+  --muted: #6b6a64;
+  --line: #d9d7cf;
+  --link: #c9c6bb;
+  --room: #f1efe8;
+  --room-line: #8a887f;
+  --start: #eaf3de;
+  --start-line: #3b6d11;
+  --end: #fceaea;
+  --end-line: #a32d2d;
+  --busy: #faeeda;
+  --active: #ef9f27;
+  --ant: #6b3a12;
+  --accent: #185fa5;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1b1b19;
+    --card: #262624;
+    --text: #ecebe5;
+    --muted: #a3a29a;
+    --line: #3d3d3a;
+    --link: #55544f;
+    --room: #33332f;
+    --room-line: #8a887f;
+    --start: #27500a;
+    --start-line: #97c459;
+    --end: #791f1f;
+    --end-line: #f09595;
+    --busy: #633806;
+    --active: #fac775;
+    --ant: #f2b45a;
+    --accent: #85b7eb;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+main { max-width: 1040px; margin: 0 auto; padding: 24px 16px 32px; }
+header { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 12px; }
+h1 { margin: 0; font-size: 22px; font-weight: 500; }
+#summary { margin: 0; color: var(--muted); font-size: 14px; }
+.stage {
+  background: var(--card);
+  border: 0.5px solid var(--line);
+  border-radius: 12px;
+  padding: 8px;
+}
+svg { display: block; width: 100%; height: auto; }
+.link { stroke: var(--link); stroke-width: 3; stroke-linecap: round; transition: stroke 0.15s; }
+.link.active { stroke: var(--active); stroke-width: 4.5; }
+.room { fill: var(--room); stroke: var(--room-line); stroke-width: 1.5; transition: fill 0.15s; }
+.room.start { fill: var(--start); stroke: var(--start-line); stroke-width: 2.5; }
+.room.end { fill: var(--end); stroke: var(--end-line); stroke-width: 2.5; }
+.room.busy { fill: var(--busy); }
+.name { fill: var(--muted); font-size: 12px; text-anchor: middle; }
+.count { fill: var(--text); font-size: 15px; font-weight: 500; text-anchor: middle; dominant-baseline: central; }
+.tag { font-size: 11px; text-anchor: middle; font-weight: 500; }
+.tag.start { fill: var(--start-line); }
+.tag.end { fill: var(--end-line); }
+.ant-body { fill: var(--ant); }
+.ant-leg { stroke: var(--ant); fill: none; stroke-width: 1.5; stroke-linecap: round; }
+.ant-num { fill: var(--text); font-size: 11px; font-weight: 500; text-anchor: middle; paint-order: stroke; stroke: var(--card); stroke-width: 3px; }
+.controls {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 12px;
+}
+button {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 40px; height: 36px; padding: 0;
+  background: transparent; color: var(--text);
+  border: 0.5px solid var(--line); border-radius: 8px; cursor: pointer;
+}
+button:hover { background: var(--card); border-color: var(--room-line); }
+button:active { transform: scale(0.97); }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+button svg { width: 18px; height: 18px; fill: currentColor; }
+.status { color: var(--muted); font-size: 14px; margin-left: 8px; font-variant-numeric: tabular-nums; }
+.row { display: flex; align-items: center; gap: 12px; margin-top: 12px; font-size: 14px; color: var(--muted); }
+.row input[type=range] { flex: 1; accent-color: var(--accent); }
+.row output { min-width: 40px; text-align: right; color: var(--text); font-variant-numeric: tabular-nums; }
+.legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px; font-size: 13px; color: var(--muted); }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; border: 2px solid; }
+.legend .s { background: var(--start); border-color: var(--start-line); }
+.legend .e { background: var(--end); border-color: var(--end-line); }
+.legend .b { background: var(--busy); border-color: var(--room-line); }
+.legend .t { border-radius: 2px; height: 4px; width: 18px; background: var(--active); border: 0; vertical-align: 2px; }
+.keys { margin-top: 8px; font-size: 12px; color: var(--muted); }
+kbd { font: inherit; border: 0.5px solid var(--line); border-radius: 4px; padding: 0 5px; }

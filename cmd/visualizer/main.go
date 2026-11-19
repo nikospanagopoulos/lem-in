@@ -3,13 +3,18 @@
 // Usage:
 //
 //	./lem-in ant-farm.txt | ./visualizer [-delay 300ms] [-width 78] [-height 20] [-color=false]
+//	./lem-in ant-farm.txt | ./visualizer -html colony.html
 //
 // It reads what lem-in prints on its standard input. The first block is the
 // colony and the second the moves. It draws one frame per turn, and redraws
 // the screen between frames with ANSI escape codes.
+//
+// With -html it writes an HTML page instead. Open the page in a browser to
+// watch the ants walk, with play, pause, step and a speed slider.
 package main
 
 import (
+	"bytes"
 	"errors"
 	"flag"
 	"fmt"
@@ -45,6 +50,7 @@ func run(args []string, in io.Reader, out io.Writer) error {
 	width := flags.Int("width", 78, "width of the drawing in characters")
 	height := flags.Int("height", 20, "height of the drawing in rows")
 	colour := flags.Bool("color", true, "use colours")
+	htmlPath := flags.String("html", "", "write an animated HTML page to this file instead of drawing in the terminal")
 	if err := flags.Parse(args); err != nil {
 		return err
 	}
@@ -58,6 +64,9 @@ func run(args []string, in io.Reader, out io.Writer) error {
 	data, err := readInput(in)
 	if err != nil {
 		return err
+	}
+	if *htmlPath != "" {
+		return saveHTML(*htmlPath, data, out)
 	}
 	l, err := newLayout(data.Colony.Rooms, *width, *height)
 	if err != nil {
@@ -87,5 +96,19 @@ func run(args []string, in io.Reader, out io.Writer) error {
 		}
 	}
 	_, err = fmt.Fprintf(out, "Done: %d ants reached the end in %d turns.\n", data.Colony.Ants, total)
+	return err
+}
+
+// saveHTML builds the page in memory first and writes the file only when the
+// page is complete, so a bad input never leaves a half written file behind.
+func saveHTML(path string, data input, out io.Writer) error {
+	var page bytes.Buffer
+	if err := writeHTML(&page, data); err != nil {
+		return err
+	}
+	if err := os.WriteFile(path, page.Bytes(), 0o644); err != nil {
+		return fmt.Errorf("cannot write the page: %w", err)
+	}
+	_, err := fmt.Fprintf(out, "Wrote %s. Open it in a browser to watch the ants.\n", path)
 	return err
 }

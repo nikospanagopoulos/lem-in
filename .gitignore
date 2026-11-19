@@ -5,6 +5,7 @@
 # Test and coverage output
 *.test
 *.out
+/colony.html
 
 # Editors and operating systems
 .vscode/

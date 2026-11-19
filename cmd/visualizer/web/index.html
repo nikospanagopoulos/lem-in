@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>lem-in visualizer</title>
+<style>{{STYLE}}</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>lem-in</h1>
+    <p id="summary"></p>
+  </header>
+
+  <div class="stage">
+    <svg id="stage" viewBox="0 0 1000 620" role="img" aria-label="The ant colony with its rooms, tunnels and moving ants">
+      <defs>
+        <g id="ant-a">
+          <path class="ant-leg" d="M-1 0 L-6 -8 M1 0 L5 -8 M3 0 L9 -6 M-1 0 L-6 8 M1 0 L5 8 M3 0 L9 6"/>
+          <ellipse class="ant-body" cx="-8" cy="0" rx="6.5" ry="4.5"/>
+          <ellipse class="ant-body" cx="0" cy="0" rx="4" ry="3.2"/>
+          <circle class="ant-body" cx="7" cy="0" r="3.4"/>
+          <path class="ant-leg" d="M9 -1.5 L14 -6 M9 1.5 L14 6"/>
+        </g>
+        <g id="ant-b">
+          <path class="ant-leg" d="M-1 0 L-3 -9 M1 0 L8 -7 M3 0 L6 -8 M-1 0 L-3 9 M1 0 L8 7 M3 0 L6 8"/>
+          <ellipse class="ant-body" cx="-8" cy="0" rx="6.5" ry="4.5"/>
+          <ellipse class="ant-body" cx="0" cy="0" rx="4" ry="3.2"/>
+          <circle class="ant-body" cx="7" cy="0" r="3.4"/>
+          <path class="ant-leg" d="M9 -1.5 L14 -6 M9 1.5 L14 6"/>
+        </g>
+      </defs>
+      <g id="links"></g>
+      <g id="rooms"></g>
+      <g id="ants"></g>
+    </svg>
+  </div>
+
+  <div class="legend" aria-hidden="true">
+    <span><i class="s"></i>start</span>
+    <span><i class="e"></i>end</span>
+    <span><i class="b"></i>room with an ant</span>
+    <span><i class="t"></i>tunnel used this turn</span>
+  </div>
+
+  <div class="controls">
+    <button id="restart" type="button" aria-label="Back to the start" title="Back to the start (Home)">
+      <svg viewBox="0 0 24 24"><path d="M11 5v14L2 12zM22 5v14l-9-7z"/></svg>
+    </button>
+    <button id="back" type="button" aria-label="Previous turn" title="Previous turn (Left)">
+      <svg viewBox="0 0 24 24"><path d="M19 5v14l-10-7zM6 5h2v14H6z"/></svg>
+    </button>
+    <button id="play" type="button" aria-label="Play" title="Play or pause (Space)">
+      <svg viewBox="0 0 24 24"><path id="play-icon" d="M8 5v14l11-7z"/></svg>
+    </button>
+    <button id="forward" type="button" aria-label="Next turn" title="Next turn (Right)">
+      <svg viewBox="0 0 24 24"><path d="M5 5v14l10-7zM16 5h2v14h-2z"/></svg>
+    </button>
+    <span class="status">Turn <span id="turn">0</span> / <span id="turns">0</span> &middot; arrived <span id="arrived">0</span> / <span id="ants-total">0</span></span>
+  </div>
+
+  <div class="row">
+    <label for="seek">Turn</label>
+    <input id="seek" type="range" min="0" max="1" step="0.01" value="0">
+    <output style="min-width:40px" aria-hidden="true"></output>
+  </div>
+  <div class="row">
+    <label for="speed">Speed</label>
+    <input id="speed" type="range" min="0.1" max="4" step="0.1" value="1">
+    <output id="speed-out" for="speed">1x</output>
+  </div>
+  <p class="keys"><kbd>Space</kbd> play or pause &middot; <kbd>&larr;</kbd> <kbd>&rarr;</kbd> one turn &middot; <kbd>Home</kbd> restart &middot; <kbd>+</kbd> <kbd>-</kbd> speed</p>
+</main>
+<script type="application/json" id="colony">{{DATA}}</script>
+<script>{{SCRIPT}}</script>
+</body>
+</html>
